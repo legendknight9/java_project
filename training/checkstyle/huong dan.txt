@@ -1,0 +1,45 @@
+**=============================================================**
+**=============================================================**
+CheckStyle : http://checkstyle.sourceforge.net/
+Install :
+-Download at : http://sourceforge.net/projects/checkstyle/files/latest/download?source=files
+-Extract downloaded file and copy to where you want. For example : D:\checkstyle5.6
+-Copy configuration file to checkstyle folder [optional]
+-Set up checkstyle path to environment variable : edit Path variable then add checkstyle path ";D:\checkstyle5.6" then Ok.
+
+Usage : 
+Copy file checkstyle-5.6-all.jar and configuration file to java Class Path or project folder
+use the command line to run.
+Example :
+java -jar checkstyle-5.6-all.jar \ -c docs/sun_checks.xml Check.java
+java com.puppycrawl.tools.checkstyle.Main -c docs/sun_checks.xml \
+     -f xml -o build/checkstyle_errors.xml Check.java
+java com.puppycrawl.tools.checkstyle.Main -c docs/sun_checks.xml \ -r src/
+java -Dcheckstyle.cache.file=target/cachefile \ com.puppycrawl.tools.checkstyle.Main -c docs/sun_checks.xml \ Check.java
+java -jar checkstyle-5.6-all.jar \ -c Checks_v1.0.xml -f plain -o report.txt -r src/
+
+Command line parameter :
+-c configurationFile - specifies the location of the file that defines the configuration modules. The location can either be a filesystem location, or a name passed to the ClassLoader.getResource() method.
+-f format - specify the output format. Options are "plain" for the DefaultLogger and "xml" for the XMLLogger. Defaults to "plain".
+-p propertiesFile - specify a properties file to use.
+-o file - specify the file to output to.
+-r dir - specify the directory to traverse for Java source files.
+
+**=============================================================**
+**=============================================================**
+Eclipse CheckStyle Plugins: http://eclipse-cs.sourceforge.net/
+Install :
+Eclipse -> help -> install new software -> Add -> Location : http://eclipse-cs.sourceforge.net/update -> Ok -> next -> I accept ... -> finish -> restart Eclipse
+or dowload here http://sourceforge.net/projects/checkstyle/files/
+
+Configure :
++Import config file:
+Project -> properties -> Checkstyle -> Local Check Config -> New -> Type : External Configuration File; Name : MyRule ; Location : browse to rule file -> Ok
++Apply to project:
+Right click on project -> Properties -> Simple - use the following .. : MyRule - (Local) -> Ok
+Right click on project -> CheckStyle -> Activate CheckStyle
+
+Check code with CheckStyle :
+Right click on project -> CheckStyle -> Check code with CheckStyle
+**=============================================================**
+**=============================================================**

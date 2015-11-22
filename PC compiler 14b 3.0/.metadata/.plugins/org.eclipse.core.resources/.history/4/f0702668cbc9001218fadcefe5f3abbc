@@ -1,0 +1,76 @@
+package gui;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.BoxLayout;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+
+import util.RelativeLayout;
+import util.UICreator;
+import java.awt.Rectangle;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JScrollBar;
+import javax.swing.JTextArea;
+
+public class test extends JFrame {
+
+	private JPanel contentPane;
+	private JFrame thisFrame;
+	private Rectangle r[];
+
+	/**
+	 * Create the frame.
+	 */
+	public test() {
+		thisFrame = this;
+		r = new Rectangle[6];
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 480, 490);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(69, 107, 200, 90);
+		contentPane.add(scrollPane);
+		
+		JTextArea txtrAsdfdasfsdaX = new JTextArea();
+		txtrAsdfdasfsdaX.setText("asdfdasfsda    x");
+		scrollPane.setViewportView(txtrAsdfdasfsdaX);
+		
+		JLabel lblFileNameMove = new JLabel("file Name                          move");
+		lblFileNameMove.setBounds(69, 93, 223, 14);
+		contentPane.add(lblFileNameMove);
+		
+		JPanel[] filesPane = new JPanel[3];
+		filesPane[0] = UICreator.createAddFileRow("C:\\test.rar");
+		filesPane[1] = UICreator.createAddFileRow("C:\\test1.rar");
+		filesPane[2] = UICreator.createAddFileRow("C:\\test2.rar");
+		String file[] = {"test", "test1", "test2"};
+		
+	}
+
+	protected void reSize(Rectangle[] r, int pos, int offset) {
+		thisFrame.resize(thisFrame.getWidth(), thisFrame.getHeight() + 30);
+		for (int index = pos + 1; index < r.length; index++) {
+			r[index].setLocation((int)r[index].getX(), (int)r[index].getY() + offset);
+		}
+		r[pos].resize((int)r[pos].getWidth(), (int)r[pos].getHeight() + offset);
+		r[pos].setBounds(r[pos]);		
+	}
+}

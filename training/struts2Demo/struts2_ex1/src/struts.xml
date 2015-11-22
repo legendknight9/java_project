@@ -1,0 +1,19 @@
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+"http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+<constant name="struts.custom.i18n.resources" value="MessageResources" />
+<package name="default" extends="struts-default">
+	<action name="submitaction" class="nhutlt.struts2.demo.submit">
+		<result name="success" type="redirect" >displayaction.action</result>
+		<result name="input">/index.jsp</result>
+		<result name="error">/index.jsp</result>
+
+	</action>
+	<action name="displayaction" class="nhutlt.struts2.demo.display">
+		<result name="success">/list.jsp</result>
+		<result name="error" type="redirect">/index.jsp</result>
+
+	</action>
+</package>
+</struts>

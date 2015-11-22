@@ -1,0 +1,264 @@
+package gui;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.swing.Box;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTree;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+import util.FHandler;
+import util.UICreator;
+import util.constants;
+import util.other;
+import java.awt.FlowLayout;
+
+public class test extends JFrame {
+	private static final long serialVersionUID = 4092098521539379006L;
+	private JPanel contentPane;
+	private JTabbedPane fileTabPane;
+	private FileTab currentTab;
+	private JFrame thisFrame;
+
+	/**
+	 * Create the frame.
+	 */
+	public test(String config[], String projectPath) {
+		thisFrame = this;
+		setTitle(constants.APPNAME + constants.VERSION);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+
+		final JMenu mnFile = new JMenu("File");
+		menuBar.add(mnFile);
+
+		JMenuItem mntmOpen = new JMenuItem("Open");
+		mntmOpen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fc = new JFileChooser();
+				fc.showOpenDialog(fileTabPane);
+				FileTab tab = null;
+				try {
+					tab = UICreator.createFileTab(fc.getSelectedFile());
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				fileTabPane.addTab(tab.getFileName(), null, tab,
+						constants.FILETAB_TOOLTIP);
+				fileTabPane.setSelectedIndex(fileTabPane.getTabCount() - 1);
+			}
+		});
+		mnFile.add(mntmOpen);
+
+		JMenuItem mntmSave = new JMenuItem("Save");
+		mntmSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				currentTab = (FileTab) fileTabPane.getSelectedComponent();
+				currentTab.saveFile();
+			}
+		});
+		mnFile.add(mntmSave);
+
+		JMenuItem mntmSaveAs = new JMenuItem("Save as");
+		mntmSaveAs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				currentTab = (FileTab) fileTabPane.getSelectedComponent();
+				currentTab.saveAsFile();
+			}
+		});
+
+		mnFile.add(mntmSaveAs);
+
+		JMenuItem mntmExit = new JMenuItem("Exit");
+		mntmExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				thisFrame.dispose();
+			}
+		});
+
+		JMenuItem mntmClose = new JMenuItem("Close");
+		mntmClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				currentTab = (FileTab) fileTabPane.getSelectedComponent();
+				currentTab.close();
+				fileTabPane.remove(currentTab);
+			}
+		});
+		mnFile.add(mntmClose);
+		mnFile.add(mntmExit);
+
+		JMenu mnProject = new JMenu("Project");
+		menuBar.add(mnProject);
+
+		JMenuItem mntmOpenProject = new JMenuItem("Open project");
+		mnProject.add(mntmOpenProject);
+
+		JMenuItem mntmSaveProject = new JMenuItem("Save project");
+		mnProject.add(mntmSaveProject);
+
+		JMenuItem mntmPackExport = new JMenuItem("Pack & export project");
+		mnProject.add(mntmPackExport);
+
+		JMenuItem mntmCloseProject = new JMenuItem("Close project");
+		mnProject.add(mntmCloseProject);
+
+		JMenu mnTool = new JMenu("Tool");
+		menuBar.add(mnTool);
+
+		JMenuItem mntmConversionCalculator = new JMenuItem(
+				"Conversion calculator");
+		mnTool.add(mntmConversionCalculator);
+
+		JMenuItem mntmAsciiTable = new JMenuItem("ASCII table");
+		mnTool.add(mntmAsciiTable);
+
+		JMenu mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
+
+		JMenuItem mntmAbout = new JMenuItem("About");
+		mntmAbout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					aboutdialog dialog = new aboutdialog();
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setModal(true);
+					dialog.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		mnHelp.add(mntmAbout);
+		contentPane = new JPanel();
+		contentPane.setBorder(new MatteBorder(0, 0, 0, 1, (Color) new Color(0,
+				0, 0)));
+		contentPane.setLayout(new GridLayout(2, 1));
+		setContentPane(contentPane);
+		File newfile = new File(constants.OUTPUTPATH);/*
+													 * this.getClass().
+													 * getClassLoader()
+													 * .getResource
+													 * ("").getPath() +
+													 * "code.asm");
+													 */
+
+		String name = other.createFixedLengthString(other.LEFT,
+				newfile.getName(), constants.STRINGLENGTH);
+		SimpleDateFormat sdf = new SimpleDateFormat(constants.DATEFORMAT);
+		String date = other.createFixedLengthString(other.LEFT,
+				sdf.format(new Date(System.currentTimeMillis())),
+				constants.STRINGLENGTH);
+		String space = other.createFixedLengthString(other.LEFT, "",
+				constants.STRINGLENGTH);
+		String introS = String.format(constants.INTROFORM, name, date, space,
+				space, space, space);
+		String configS = String.format(constants.CONFIGSTRINGFORM, config[0],
+				config[1], config[2], config[3]);
+		String out[] = { introS, configS };
+		FHandler.outputAsm(out, newfile);
+
+		FileTab newtab = null;
+		try {
+			newtab = UICreator.createFileTab(newfile);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		DefaultMutableTreeNode root = other.getFolderStructure(new File(
+				projectPath));
+
+		JPanel mainArea = new JPanel();
+		contentPane.add(mainArea, new Float(10));
+		mainArea.setLayout(new BorderLayout(0, 0));
+		JTree tree = new JTree(root);
+		JScrollPane projectFolderStructure = new JScrollPane(tree);
+		mainArea.add(projectFolderStructure, BorderLayout.WEST);
+		projectFolderStructure.setBounds(0, 0, 160, 1000);
+
+		fileTabPane = new JTabbedPane(JTabbedPane.TOP);
+		mainArea.add(fileTabPane, BorderLayout.CENTER);
+		fileTabPane.addTab(newtab.getFileName(), null, newtab,
+				newtab.getFileSize());
+		projectFolderStructure
+				.addPropertyChangeListener(new PropertyChangeListener() {
+
+					@Override
+					public void propertyChange(PropertyChangeEvent evt) {
+						@SuppressWarnings("unused")
+						String changeProperty = evt.getPropertyName();
+						// if (changeProperty != null) {
+						// if changeProperty.equals
+						// }
+					}
+				});
+
+		JPanel status = new JPanel();
+		contentPane.add(status);// , BorderLayout.NORTH);
+		status.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+
+		Box horizontalBox = Box.createHorizontalBox();
+		status.add(horizontalBox);
+		horizontalBox.setPreferredSize(new Dimension(200, 22));
+		horizontalBox.setBackground(Color.LIGHT_GRAY);
+		horizontalBox
+				.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		horizontalBox.setBorder(new LineBorder(new Color(0, 0, 0)));
+
+		JLabel lblStatus = new JLabel("Status");
+		lblStatus.setHorizontalAlignment(SwingConstants.CENTER);
+		lblStatus.setHorizontalTextPosition(SwingConstants.LEFT);
+		lblStatus.setPreferredSize(new Dimension(80, 16));
+		lblStatus.setBorder(new MatteBorder(0, 0, 0, 1, (Color) new Color(0, 0,
+				0)));
+		horizontalBox.add(lblStatus);
+
+		JLabel lblCursorPos = new JLabel("row column");
+		lblCursorPos.setHorizontalAlignment(SwingConstants.CENTER);
+		lblCursorPos.setPreferredSize(new Dimension(80, 16));
+		lblCursorPos.setBorder(new MatteBorder(0, 0, 0, 1, (Color) new Color(0,
+				0, 0)));
+		horizontalBox.add(lblCursorPos);
+
+		JLabel lblProgress = new JLabel("Progress");
+		lblProgress.setHorizontalAlignment(SwingConstants.CENTER);
+		lblProgress.setPreferredSize(new Dimension(80, 16));
+		horizontalBox.add(lblProgress);
+
+		JProgressBar progressBar = new JProgressBar();
+		progressBar.setMaximumSize(new Dimension(32767, 16));
+		progressBar.setMinimumSize(new Dimension(10, 16));
+		progressBar.setPreferredSize(new Dimension(90, 16));
+		lblProgress.setLabelFor(progressBar);
+		horizontalBox.add(progressBar);
+	}
+
+}

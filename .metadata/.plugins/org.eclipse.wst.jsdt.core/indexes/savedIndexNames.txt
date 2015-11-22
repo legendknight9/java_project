@@ -1,0 +1,14 @@
+INDEX VERSION 1.122+M:\Nhut drive\Study\computer\lap trinh\J++ va java\my code\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+3306762527.index
+642388325.index
+2297290111.index
+464525941.index
+2193181647.index
+2112121385.index
+2182825779.index
+1544577189.index
+4112283557.index
+105435850.index
+2303273280.index
+1579545489.index
+1739368182.index

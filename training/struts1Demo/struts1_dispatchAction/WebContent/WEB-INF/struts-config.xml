@@ -1,0 +1,21 @@
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="myform"
+			type="nhutlt.demo.struts1.loginformbean" />
+	</form-beans>
+
+	<global-forwards>
+		<forward name="firstpage" path="/index.jsp" />
+	</global-forwards>
+	<action-mappings>
+		<action input="/index.jsp" parameter="method" name="myform"
+			path="/login" scope="request" type="nhutlt.demo.struts1.login">
+			<forward name="success" path="/success.jsp" />
+			<forward name="failure" path="/failure.jsp" />
+		</action>
+	</action-mappings>
+
+	<controller processorClass="org.apache.struts.action.RequestProcessor" />
+</struts-config>

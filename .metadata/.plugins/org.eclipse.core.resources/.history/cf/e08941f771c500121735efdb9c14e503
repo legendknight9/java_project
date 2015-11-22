@@ -1,0 +1,164 @@
+/**
+ * 
+ */
+package codegenerator;
+
+import gui.dot;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import javax.swing.JPanel;
+
+/**
+ * @author ThanhNhut
+ * 
+ */
+public class codegenerator {
+	protected ArrayList<String> codeTable;
+	protected String codeString;
+
+	public codegenerator() {
+		codeTable = new ArrayList<String>();
+		codeString = null;
+	}
+
+	public int[] getValueArray(JPanel characterPatternPanel, int width,
+			int height) {
+		int[] value;
+		int[] limit;
+		int limitLength = 0;
+		int temp = height;
+		int numberOfDots = characterPatternPanel.getComponentCount();
+		int[] dotvalue = new int[numberOfDots];
+		for (int index = 0; index < numberOfDots; index++) {
+			dotvalue[index] = ((dot) characterPatternPanel.getComponent(index))
+					.getState();
+		}
+
+		do {
+			limitLength++;
+			temp -= 8;
+		} while (temp > 0);
+
+		if (height > 8) {
+			limit = new int[limitLength];
+			for (int i = 0; i < limitLength; i++) {
+				limit[i] = 8;
+			}
+			int remainder = height % 8;
+			if (remainder > 0) {
+				limit[limitLength - 1] = remainder;
+			}
+
+		} else {
+			limit = new int[] { height };
+		}
+
+		value = new int[width * limit.length];
+
+		for (int line = 0; line < limit.length; line++) {
+			for (int column = 0; column < width; column++) {
+				for (int row = 0; row < limit[line]; row++) {
+					value[column + line * width] += dotvalue[column + row
+							* width + line * 8 * width]
+							* (Math.pow(2, row));
+				}
+			}
+		}
+
+		return value;
+	}
+
+	public String generateCodeString(int value[], String characterName,
+			String definedFormatString) {
+		String endOfLine = System.getProperty("line.separator");
+		String valueString = "", addedSpace = "";
+
+		for (int i : value) {
+			String temp = Integer.toHexString(i).toUpperCase();
+			if (temp.length() < 2) {
+				temp = "0" + temp;
+			}
+			valueString += "0x" + temp + ", ";
+		}
+		valueString = valueString.substring(0, valueString.length() - 2);
+		
+		if (characterName.length() < 9) {
+			int index = 9 - characterName.length();
+			while(index > 0) { 
+				addedSpace += " ";
+				index--;
+			}
+		}
+		String characterCode = String.format(definedFormatString,
+				characterName, value.length + 1, addedSpace, value.length, valueString,
+				endOfLine);
+		codeString = characterCode;
+		return characterCode;
+	}
+
+	public void addToStringArray() {
+		if (codeString != null) {
+			codeTable.add(codeString);
+			codeString = null;
+		}
+	}
+
+	public void saveToFile(File codeTableFile) {
+		PrintWriter out = null;
+		try {
+			out = new PrintWriter(new BufferedWriter(new FileWriter(
+					codeTableFile, true)));
+		} catch (IOException e) {
+			e.printStackTrace();
+
+		}
+		for (String code : codeTable) {
+			out.write(code);
+		}
+		out.flush();
+		out.close();
+	}
+	
+	public void readFromFile(File codeTableFile) {
+		Scanner in = null;
+		try {
+			in = new Scanner(codeTableFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		while(in.hasNextLine()) {
+			codeTable.add(in.nextLine());
+		}
+		in.close();
+	}
+	
+	public int readFileMetaData(File codeTableFile) {
+		Scanner in = null;
+		String temp = "";
+		int numberOfCharacter = 0;
+		try {
+			in = new Scanner(codeTableFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		while(in.hasNextLine()) {
+			temp = in.nextLine();
+			if (temp.contains("char c_")) {
+				numberOfCharacter++;
+			}
+		}
+		in.close();
+		
+		return numberOfCharacter;
+	}
+}

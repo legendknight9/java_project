@@ -1,0 +1,18 @@
+<taglib>
+	<tlibversion>1.0</tlibversion>
+	<jspversion>2.0</jspversion>
+	<shortname>showTraineeList</shortname>
+	<info>Show trainee list info get from database</info>
+
+	<tag>
+		<name>showTraineeList</name>
+		<tag-class>nhutlt.jsp.customtag.TraineeListTag</tag-class>
+		<info>Show TraineeList</info>
+
+		<attribute>
+			<name>traineeList</name>
+			<required>true</required>
+
+		</attribute>
+	</tag>
+</taglib>

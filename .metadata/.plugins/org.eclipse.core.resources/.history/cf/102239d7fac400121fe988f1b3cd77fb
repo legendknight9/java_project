@@ -1,0 +1,25 @@
+import gui.maingui;
+
+/**
+ * 
+ */
+
+/**
+ * @author ThanhNhut
+ *
+ */
+public class generator {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {	
+		final maingui gui = new maingui();
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {       	            	
+            	gui.showGUI();
+            }
+        });
+	}
+
+}

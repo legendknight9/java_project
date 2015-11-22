@@ -1,0 +1,371 @@
+/**
+ * 
+ */
+package gui;
+
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.StringTokenizer;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JRootPane;
+import javax.swing.JTextField;
+import javax.swing.filechooser.FileFilter;
+
+import codegenerator.codegenerator;
+
+
+/**
+ * @author ThanhNhut
+ * 
+ */
+public class maingui {
+	private JFrame mainFrame;
+	private JTextField pathTF, codeNameTF, codeFormatTF;
+	private JLabel numberOFCodeInfoLB;
+	private File codeTableFile;
+	private JPanel characterPatternPanel;
+	private codegenerator gen;
+	private int row, column;
+	private int mode;
+	private char character;
+
+	public maingui() {
+		row = 8;
+		column = 5;
+		final JButton applyBT = new JButton(constants.APPLYBTLABEL);
+		mainFrame = new JFrame();
+		JPanel panel = new JPanel();
+		characterPatternPanel = createCharacterCodePanel(row, column);
+		JPanel settingPanel = new JPanel();
+		JPanel createCharacterLayout = createCharacterSettingPanel();
+		JPanel codeTable = new JPanel();
+		JPanel codeFormat = new JPanel();
+		gen = null;
+
+		// code table panel
+		GridLayout codeTableLayout = new GridLayout(3, 1, 5, 10);
+		codeTable.setSize(constants.FILEPANELSIZE);
+		codeTable.setLayout(codeTableLayout);
+		codeTable.setBorder(BorderFactory
+				.createTitledBorder(constants.FILEPANELTITLE));
+
+		JPanel codeTableFirstRow = new JPanel();
+		codeTableFirstRow.setLayout(new RelativeLayout(RelativeLayout.X_AXIS, 5));
+		JLabel numberOfCodeLB = new JLabel(constants.CODETABLELENGTHLABEL);
+		numberOFCodeInfoLB = new JLabel();
+		
+		codeTableFirstRow.add(numberOfCodeLB, new Float(5));
+		codeTableFirstRow.add(numberOFCodeInfoLB, new Float(2));
+
+		JPanel codeTableSecondRow = new JPanel();
+		codeTableSecondRow.setLayout(new RelativeLayout(RelativeLayout.X_AXIS, 5));
+		JLabel pathLB = new JLabel(constants.PATHLABEL);
+		pathTF = new JTextField();
+		pathTF.setSize(constants.TFSIZE);
+		JButton browseBT = new JButton(constants.BROWSEBTLABEL);
+		browseBT.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser fc = new JFileChooser();
+				fc.setFileFilter(new FileFilter() {
+					
+					@Override
+					public String getDescription() {
+						return constants.FILEFILTERDESC;
+					}
+					
+					@Override
+					public boolean accept(File f) {
+						String name = f.getName();
+						StringTokenizer token = new StringTokenizer(name, ".");
+						if (f.isFile() && (name.contains("."))) {
+							String extension = "";
+							while (token.hasMoreTokens()) {
+								extension = token.nextToken();
+							}							
+							return extension.equals(constants.EXTENSIONFILTER);
+						} else {
+							return false;
+						}
+					}
+				});
+				fc.showOpenDialog(mainFrame);
+				codeTableFile = fc.getSelectedFile();
+				pathTF.setText(codeTableFile.getAbsolutePath());
+				gen = new codegenerator();
+				numberOFCodeInfoLB.setText(Integer.toString(gen.readFileMetaData(codeTableFile)));
+			}
+		});
+
+		codeTableSecondRow.add(pathLB, new Float(2));
+		codeTableSecondRow.add(pathTF, new Float(8));
+		codeTableSecondRow.add(browseBT, new Float(1));
+
+		JPanel codeTableThirdRow = new JPanel();
+		codeTableThirdRow.setLayout(new GridLayout(1, 3, 10, 10));
+		final JButton saveBT = new JButton(constants.SAVEBTLABEL);
+		saveBT.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (gen != null) {
+					gen.saveToFile(codeTableFile);
+				}
+			}
+		});
+		final JButton AddBT = new JButton(constants.ADDBTLABEL);
+		AddBT.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (gen != null) {
+					int [] value = gen.getValueArray(characterPatternPanel, column, row);
+					String codeTemp = gen.generateCodeString(value, codeNameTF.getText(), codeFormatTF.getText());
+					gen.addToStringArray();
+					//System.out.println(codeTemp);
+					character++;
+					if ((((mode == constants.HALFMODE) || (mode == constants.CTRLHALFMODE)) && (character > 127))
+							|| (((mode == constants.FULLMODE) || (mode == constants.CTRLFULLMODE)) && (character > 255))) {
+					   applyBT.doClick();
+					   mode = 0;
+					   character = 0;
+					} else {											
+						codeNameTF.setText(character + "");
+						int numberOfDot = characterPatternPanel.getComponentCount();
+						for (int i = 0; i < numberOfDot; i++) {
+							((dot)characterPatternPanel.getComponent(i)).setState(0);
+						}
+						mainFrame.revalidate();
+						mainFrame.repaint();
+					}
+				}
+			}
+		});
+		final JButton clearBT = new JButton(constants.CLEARBTLABEL);
+		clearBT.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (gen != null) {
+					gen.addToStringArray();
+				 	gen.saveToFile(codeTableFile);
+				}
+				codeTableFile = null;
+				gen = null;
+				pathTF.setText("");
+			}
+		});
+		codeTableThirdRow.add(saveBT);
+		codeTableThirdRow.add(AddBT);
+		codeTableThirdRow.add(clearBT);
+
+		codeTable.add(codeTableFirstRow);
+		codeTable.add(codeTableSecondRow);
+		codeTable.add(codeTableThirdRow);
+
+		// code format panel
+		GridLayout codeFormatLayout = new GridLayout(3, 1);
+		codeFormat.setSize(constants.CODEPANELSIZE);
+		codeFormat.setLayout(codeFormatLayout);
+		codeFormat.setBorder(BorderFactory
+				.createTitledBorder(constants.CODEPANELTITLE));
+			
+		JLabel characterCodeNameLB = new JLabel(constants.CHARACTERCODENAMELABEL);
+		JLabel codeFormatLB = new JLabel(constants.CODEFORMATLABEL);
+	    codeNameTF = new JTextField();
+	    codeFormatTF = new JTextField(constants.CODEDEFINEFORMAT);
+	    //final JButton applyBT = new JButton(constants.APPLYBTLABEL);
+	    final JButton modeBT = new JButton(constants.MODEBTLABEL);
+	    applyBT.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+				if (codeFormatTF.isEditable()) {
+					codeNameTF.setEditable(false);
+					codeFormatTF.setEditable(false);
+					applyBT.setText(constants.CHANGEBTLABEL);
+					modeBT.setVisible(false);
+				} else {
+					codeNameTF.setEditable(true);
+					codeFormatTF.setEditable(true);
+					applyBT.setText(constants.APPLYBTLABEL);
+					modeBT.setVisible(true);
+				}				
+			}
+		});
+	    
+	    modeBT.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				final setmodedialog dialog = new setmodedialog(mainFrame, constants.SELECTMODEDIALOGTITLE);
+				
+				String selectMode = ((JLabel)dialog.getContentPane().getComponent(0)).getText();
+				System.out.println("test " + selectMode);
+				if (selectMode.equals(constants.FREEMODESTRING)) {
+					mode = constants.FREEMODE;					
+				} else if (selectMode.equals(constants.HALFMODESTRING)) {
+					mode = constants.HALFMODE;
+					character = 33;
+				} else if (selectMode.equals(constants.FULLMODESTRING)) {
+					mode = constants.FULLMODE;
+					character = 33;
+				} else if (selectMode.equals(constants.CTRLHALFMODESTRING)) {
+					mode = constants.CTRLHALFMODE;
+					character = 0;
+				} else if (selectMode.equals(constants.CTRLFULLMODESTRING)) {
+					mode = constants.CTRLFULLMODE;
+					character = 0;
+				} else {
+					mode = constants.FREEMODE;
+				}
+				if (mode != 0) {
+					applyBT.doClick();
+					codeNameTF.setText(character + "");
+					int numberOfDot = characterPatternPanel.getComponentCount();
+					for (int i = 0; i < numberOfDot; i++) {
+						((dot)characterPatternPanel.getComponent(i)).setState(0);
+					}
+					mainFrame.revalidate();
+					mainFrame.repaint();
+				}
+			}
+				
+		});
+	    
+	    JPanel codeFormatFirstRow = new JPanel(new RelativeLayout(RelativeLayout.X_AXIS, 5));
+	    JPanel codeFormatSecondRow = new JPanel(new RelativeLayout(RelativeLayout.X_AXIS, 5));
+	    JPanel codeFormatThirdRow = new JPanel(new RelativeLayout(RelativeLayout.X_AXIS, 5));
+	    
+	    codeFormatFirstRow.add(characterCodeNameLB, new Float(5));
+	    codeFormatFirstRow.add(codeNameTF, new Float(7));
+	    codeFormatSecondRow.add(codeFormatLB, new Float(5));
+	    codeFormatSecondRow.add(codeFormatTF, new Float(7));
+	    codeFormatThirdRow.add(applyBT, new Float(4));
+	    codeFormatThirdRow.add(modeBT, new Float(5));
+
+	    codeFormat.add(codeFormatFirstRow);
+	    codeFormat.add(codeFormatSecondRow);
+	    codeFormat.add(codeFormatThirdRow);
+	    
+		// setting panel
+		settingPanel.setSize(constants.SETTINGPANELSIZE);
+		settingPanel.setLayout(new GridLayout(3, 1, 2, 2));
+		settingPanel.setBorder(BorderFactory
+				.createTitledBorder(constants.SETTINGPANELTITLE));
+		settingPanel.add(createCharacterLayout, new Float(3));
+		settingPanel.add(codeTable, new Float(5));
+		settingPanel.add(codeFormat, new Float(5));
+
+		// main panel
+		GridLayout panelLayout = new GridLayout(1, 2);
+		panel.setSize(constants.PANELSIZE);
+		panel.setLayout(panelLayout);
+		panel.add(settingPanel);
+		panel.add(characterPatternPanel);
+
+		// mainFrame
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.add(panel);
+		mainFrame.setResizable(false);
+	}
+
+	public void showGUI() {
+		mainFrame.pack();
+		mainFrame.setTitle(constants.APPNAME + " " + constants.VERSION);
+		mainFrame.setVisible(true);
+	}
+
+	private JPanel createCharacterSettingPanel() {
+		JLabel sizeLB = new JLabel(constants.SIZELABEL);
+		final JTextField widthTF = new JTextField();
+		final JTextField heightTF = new JTextField();
+		widthTF.setPreferredSize(constants.TFSIZE);
+		heightTF.setPreferredSize(constants.TFSIZE);
+		JPanel sizeGroup = new JPanel(new RelativeLayout(RelativeLayout.X_AXIS, 10));
+		sizeGroup.add(sizeLB, new Float(2.5));
+		sizeGroup.add(widthTF, new Float(7));
+		sizeGroup.add(heightTF, new Float(7));
+
+		JButton createBT = new JButton(constants.SHOWLAYOUTBTLABEL);
+		createBT.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					column = Integer.parseInt(widthTF.getText());
+					row = Integer.parseInt(heightTF.getText());
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+					column = 1;
+					row = 1;
+				}
+								
+				characterPatternPanel.removeAll();
+				characterPatternPanel.setLayout(new GridLayout(row, column));
+				int size = row * column;
+				dot characterDot;
+				for (int i = 0; i < size; i++) {
+					characterDot = new dot();
+					characterPatternPanel.add(characterDot);
+				}
+				mainFrame.revalidate();
+				mainFrame.repaint();
+			}
+		});
+		JButton reverseBT = new JButton(constants.REVERSEBTLABEL);
+		reverseBT.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int numberOfDot = characterPatternPanel.getComponentCount();
+				for (int i = 0; i < numberOfDot; i++) {
+					((dot)characterPatternPanel.getComponent(i)).reverseState();
+				}
+				mainFrame.revalidate();
+				mainFrame.repaint();
+			}
+		});
+		
+		JPanel createCharacterLayoutSecondRow = new JPanel(new RelativeLayout(RelativeLayout.X_AXIS, 2));
+		createCharacterLayoutSecondRow.add(createBT, new Float(6));
+		createCharacterLayoutSecondRow.add(reverseBT, new Float(4));
+		
+		JPanel createCharacterLayout = new JPanel(new GridLayout(2, 1, 5, 2));
+		createCharacterLayout.setSize(constants.CREATEPANELSIZE);
+		createCharacterLayout.setBorder(BorderFactory
+				.createTitledBorder(constants.CREATEPANELTITLE));
+		createCharacterLayout.add(sizeGroup, new Float(1));
+		createCharacterLayout.add(createCharacterLayoutSecondRow, new Float(1.6));
+		
+		return createCharacterLayout;
+	}
+
+	private JPanel createCharacterCodePanel(int row, int column) {
+		JPanel characterPattern = new JPanel();
+		int size = row * column;
+		GridLayout characterLayout = new GridLayout(row, column);
+		characterPattern.setSize(constants.CHARACTERPANELSIZE);
+		characterPattern.setLayout(characterLayout);
+		characterPattern.setBorder(BorderFactory
+				.createTitledBorder(constants.CHARACTERPANELTITLE));
+		dot characterDot;
+		for (int i = 0; i < size; i++) {
+			characterDot = new dot();
+			characterPattern.add(characterDot);
+		}
+		return characterPattern;
+	}	
+}

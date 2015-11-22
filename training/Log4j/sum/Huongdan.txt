@@ -1,0 +1,60 @@
+Log4j (more detail http://www.tutorialspoint.com/log4j/index.htm)
+
+Install:
+http://logging.apache.org/log4j/1.2/download.html
+Download & extract
+Add file log4j-1.2.1.7.jar to project : right click on project -> properties -> Java build path -> Libraries -> Add JAR -> select log4j-1.2.17.jar -> OK.
+Click on tab Order and Export -> Select log4j-1.2.17.jar -> OK
+
+Usage:
+Create properties file and install to project.
+instantiate class Logger and configure it by using code.
+use log methods to log.
+
++Properties file syntax:
+refer to properties files
+
++Example code:
+public class test {
+	static final Logger log = Logger.getLogger(test.class);
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		PropertyConfigurator.configure("logger.properties");
+		log.debug("Sample debug message");
+		log.info("Sample info message");
+		log.warn("Sample warn message");
+		log.error("Sample error message");
+		log.fatal("Sample fatal message");
+	}
+}
+
+Information:
++Debug level :
+TRACE,
+DEBUG,
+INFO,
+WARN,
+ERROR and
+FATAL
+(TRACE is highest and include lower level message.)
+
++FileAppender params: (appender name is X)
+# Set the output file path and name
+log4j.appender.X.File=report/monitor.log
+# for unix : log4j.appender.X.File=${report}/monitor.log
+# Set the threshold to debug mode, the higher level will not be recorded.
+log4j.appender.X.Threshold=debug
+# Set the append to false, should not overwrite
+log4j.appender.X.Append=true
+
++RollingFileAppender params: to log into multiple file (this class extends File Appender)
+# Define the file appender using RollingFileAppender instead of FileAppender
+log4j.appender.X=org.apache.log4j.RollingFileAppender
+# Set the name of the file
+log4j.appender.FILE.File=${log}/log.out
+# Set the maximum file size before rollover
+log4j.appender.FILE.MaxFileSize=5KB
+# Set the number of backup file
+log4j.appender.FILE..MaxBackupIndex=2

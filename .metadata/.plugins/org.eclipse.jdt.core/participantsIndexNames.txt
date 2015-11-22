@@ -1,0 +1,17 @@
+INDEX VERSION 1.126
+M:\Nhut drive\Study\computer\lap trinh\J++ va java\my code\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\50722296.index
+\Ass3\src
+M:\Nhut drive\Study\computer\lap trinh\J++ va java\my code\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\2560670103.index
+\Ass2\src
+M:\Nhut drive\Study\computer\lap trinh\J++ va java\my code\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\2504089818.index
+\struts2_ex2\src
+M:\Nhut drive\Study\computer\lap trinh\J++ va java\my code\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\4153402556.index
+\customtag_example\src
+M:\Nhut drive\Study\computer\lap trinh\J++ va java\my code\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3407283928.index
+\struts1_ex1\src
+M:\Nhut drive\Study\computer\lap trinh\J++ va java\my code\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3806310954.index
+\struts2_ex1\src
+M:\Nhut drive\Study\computer\lap trinh\J++ va java\my code\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3163149352.index
+\struts1_ex2\src
+M:\Nhut drive\Study\computer\lap trinh\J++ va java\my code\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\32368974.index
+\struts1_dispatchAction_example\src

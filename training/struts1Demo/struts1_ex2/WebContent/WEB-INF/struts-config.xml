@@ -1,0 +1,37 @@
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+    <form-beans>
+        <form-bean name="submitForm" type="nhutlt.struts1.demo.submitForm" />
+        <form-bean name="feedBackForm" type="nhutlt.struts1.demo.feedBackForm" />
+    </form-beans>
+
+    <global-forwards>    
+        <forward name="firstpage" path="/index.jsp" />
+    </global-forwards>
+
+    <action-mappings>
+		<action path="/submit"
+				type="nhutlt.struts1.demo.submitAction"
+				input="/index.jsp"
+				name="submitForm"
+				validate="true"
+				scope="request">
+         <forward name="success" path="/list.jsp" />
+         <forward name="error" path="/index.jsp" />         
+        </action>   
+        
+        <action path="/feedback"
+				type="nhutlt.struts1.demo.feedBackAction"
+				input="/list.jsp"
+				name="feedBackForm"
+				validate="true"
+				scope="request">
+         <forward name="success" path="/index.jsp" />         
+        </action>     
+    </action-mappings>
+
+    <controller processorClass="org.apache.struts.action.RequestProcessor" />
+    <message-resources parameter="nhutlt.struts1.demo.MessageResources" null="false"/>
+
+</struts-config>

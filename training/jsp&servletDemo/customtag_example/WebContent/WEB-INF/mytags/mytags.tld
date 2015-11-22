@@ -1,0 +1,109 @@
+<taglib>
+	<tlibversion>1.0</tlibversion>
+	<jspversion>1.2</jspversion>
+	<shortname>Login Trainee List</shortname>
+	<info>Show Login Form and get input data</info>
+
+	<tag>
+		<name>LoginForm</name>
+		<tag-class>nhutlt.customtag.logintag</tag-class>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>method</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+
+		<attribute>
+			<name>label1</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>value1</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		
+		<attribute>
+			<name>label2</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>value2</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		
+		<attribute>
+			<name>label3</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>value3</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		
+		<attribute>
+			<name>label4</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>value4</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	
+	<tag>
+		<name>feedbackform</name>
+		<tag-class>nhutlt.customtag.feedbacktag</tag-class>
+		<body-content>empty</body-content>
+		
+		<attribute>
+			<name>list</name>
+			<required>true</required>
+			<elexprvalue>true</elexprvalue>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				List of object to display. 
+				Use list="${listname}" to assign list.
+				Set list to context attribute. Example : use pageContext.setAttribute("listname", listObject).
+			</description>
+		</attribute>
+
+		<attribute>
+			<name>nospecifiedlabel</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				If true, it will display all attribute of object class of list.
+				  false, it will display attribute listed by listattr, listlabel so Listattr and listlabel must not be blank.	
+			</description>
+		</attribute>
+		
+		<attribute>
+			<name>listattr</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				List name of attribute to display, separated by comma (",")
+				Example : listattr="name,email,account"
+			</description>
+		</attribute>
+		<attribute>
+			<name>listlabel</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>
+				List name of label to display, separated by comma (",").
+				List label in corresponding order of listattr.
+				Example : listlabel="First Name,Email,Account"
+			</description>
+		</attribute>
+	</tag>
+</taglib>

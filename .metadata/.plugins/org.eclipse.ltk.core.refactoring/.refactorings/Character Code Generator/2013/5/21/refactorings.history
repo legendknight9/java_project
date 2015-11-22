@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;maingui.java&apos; to &apos;gui.maingui.java&apos;&#x0D;&#x0A;- Original project: &apos;Character Code Generator&apos;&#x0D;&#x0A;- Destination element: &apos;gui.maingui.java&apos;&#x0D;&#x0A;- Original element: &apos;gui.maingui.java&apos;" description="Copy compilation unit" destination="/src&lt;gui{maingui.java" element1="/src&lt;gui{maingui.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1369458179523" units="1" version="1.0"/>
+</session>
