@@ -1,0 +1,8 @@
+Last pass of passlength 5 is " ;Yn;"
+Last pass of passlength 6 is "  '@(J"
+Last pass of passlength 7 is "   %m(S"
+Last pass of passlength 8 is "    %]O}"
+Last pass of passlength 9 is "     %W!>"
+Last pass of passlength 10 is "      "b[#"
+Last pass of passlength 11 is "       "drk"
+Last pass of passlength 12 is "        "dna"
