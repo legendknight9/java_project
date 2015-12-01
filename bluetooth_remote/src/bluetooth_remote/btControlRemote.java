@@ -4,9 +4,16 @@
 package bluetooth_remote;
 
 import java.awt.AWTException;
+import java.awt.TrayIcon;
+import java.awt.TrayIcon.MessageType;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URL;
+import java.util.Scanner;
 
 import javax.bluetooth.BluetoothStateException;
 import javax.bluetooth.DiscoveryAgent;
@@ -24,14 +31,57 @@ import nhut.java.mouse.mouseMover;
  * @author java_dev
  *
  */
-public class btControlRemote {
+public class btControlRemote implements Runnable{
 	
-
+	private static systemTray sysT;
+	private final static String NOPASS_COMMENT = "# my btremote add-in";
+	private final static String PATH_SEPARATOR = System.getProperty("file.separator");
+	private final static String NEWLINE = System.getProperty("line.separator");
+	private final static String NOPASS = NOPASS_COMMENT + NEWLINE
+								  	+ System.getProperty("user.name") + " ALL=NOPASSWD: /usr/sbin/pm-hibernate";
+	private final static String SUDOERS_FILE = PATH_SEPARATOR + "etc" + PATH_SEPARATOR + "sudoers.d" 
+								  	+ PATH_SEPARATOR + "mybtpermission";
+	
 	public static void main(String[] args) {
-		systemTray sysT = new systemTray();		
+		sysT = new systemTray();
+		initialize(systemTray.OSNUMBER);
+	}
+	
+	public static void initialize(int OSNUMBER) {
+		if (OSNUMBER == systemTray.WIN) {
+			
+		} else {
+//			try {
+//				Runtime.getRuntime().exec("/bin/sh -c if [ ! -e " + SUDOERS_FILE + " ]; then echo \"hi\" > file;fi");
+//				if ((new File("file")).exists()) {
+////					Runtime.getRuntime().exec("rm file");
+//					sysT.showMessage("OK", "no password require for pm-hibernate", MessageType.INFO);
+//					return;
+//				}
+//				sysT.showMessage("Password require!!", "Input password to enable no password require for pm-hibernate", MessageType.INFO);
+//				Runtime.getRuntime().exec("./a.sh");
+//				Runtime.getRuntime().exec("bash -c echo \"" + NOPASS + "\" > ./a");
+//				//Runtime.getRuntime().exec("sudo mv a " + SUDOERS_FILE);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+			try {
+				File f = new File("./mybtremote_permission");
+				if (f.exists()) return;
+				PrintWriter pw = new PrintWriter(new FileWriter(f, false), true);
+				pw.println(NOPASS);
+				pw.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			sysT.showMessage("Update /etc/sudoers require !", 
+					"chmod 0440, chown root & copy file mybtremote_permission to /etc/sudoers.d/ if necessary", MessageType.INFO);
+		}
 	}
 
 	public static void connect() {
+		(new File("./mybtremote_permission")).delete();
 		//display local device address and name
 		LocalDevice localDevice = null;
 		try {
@@ -46,7 +96,12 @@ public class btControlRemote {
 			e.printStackTrace();
 		}
 		System.out.println("TV Address: " + localDevice.getBluetoothAddress() + " TV Name: " + localDevice.getFriendlyName());
+		Thread server = new Thread(new btControlRemote());
+		server.start();
+	}
 
+	@Override
+	public void run() {
 		//Create a UUID for SPP
 		UUID uuid = new UUID("1101", true);
 		//Create the servicve url
@@ -67,7 +122,7 @@ public class btControlRemote {
 			//read string from spp client
 			InputStream inStream = connection.openInputStream();
 			while (true) {
-				int command = inStream.read();
+				int command = inStream.read();				
 				if (command == 255) {
 					break;
 				} else if (command < 11) {

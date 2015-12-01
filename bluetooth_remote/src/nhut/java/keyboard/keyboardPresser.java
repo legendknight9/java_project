@@ -5,10 +5,13 @@ package nhut.java.keyboard;
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import java.awt.TrayIcon;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import javax.sound.sampled.*;
+
+import bluetooth_remote.systemTray;
 
 
 /**
@@ -65,33 +68,50 @@ public class keyboardPresser {
 	
 	public void specialFunction(int function) throws IOException {
 		switch(function) {
-			case LOCKSCREEN: Runtime.getRuntime().exec("rundll32 user32.dll,LockWorkStation");
+			case LOCKSCREEN: if (systemTray.OSNUMBER == systemTray.WIN) Runtime.getRuntime().exec("rundll32 user32.dll,LockWorkStation");
+							else Runtime.getRuntime().exec("gnome-screensaver-command -l");
 					break;
-			case HIBERNATE: Runtime.getRuntime().exec("Rundll32.exe powrprof.dll,SetSuspendState Sleep");
+			case HIBERNATE: if (systemTray.OSNUMBER == systemTray.WIN) Runtime.getRuntime().exec("Rundll32.exe powrprof.dll,SetSuspendState Sleep");
+							else Runtime.getRuntime().exec("sudo pm-hibernate");
 					break;
-			case LOGOFF: Runtime.getRuntime().exec("shutdown /l");
+			case LOGOFF: 	if (systemTray.OSNUMBER == systemTray.WIN) Runtime.getRuntime().exec("shutdown /l");
+							else Runtime.getRuntime().exec("gnome-session-quit --no-prompt");
 					break;
-			case RESTART: Runtime.getRuntime().exec("shutdown /r /f /t 20");
+			case RESTART: 	if (systemTray.OSNUMBER == systemTray.WIN) Runtime.getRuntime().exec("shutdown /r /f /t 20"); 
+							else Runtime.getRuntime().exec("gnome-session-quit --reboot --no-prompt --force");
 					break;
-			case SHUTDOWN: Runtime.getRuntime().exec("shutdown /s /f /t 20");
+			case SHUTDOWN: 	if (systemTray.OSNUMBER == systemTray.WIN) Runtime.getRuntime().exec("shutdown /s /f /t 20");
+							else Runtime.getRuntime().exec("gnome-session-quit --power-off --no-prompt --force");
 					break;			
-			case VOLUMEPLUS: Runtime.getRuntime().exec("sndvol"); keyPresser.delay(1600);
-							// pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_SHIFT, KeyEvent.VK_TAB, KeyEvent.VK_TAB});							 
-							 pressKey(KeyEvent.VK_UP); pressKey(KeyEvent.VK_UP); pressKey(KeyEvent.VK_UP); 
-							 pressKey(KeyEvent.VK_UP); pressKey(KeyEvent.VK_UP);
-							 pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_F4});
+			case VOLUMEPLUS: 	if (systemTray.OSNUMBER == systemTray.WIN) {
+									Runtime.getRuntime().exec("sndvol"); keyPresser.delay(1600);
+									//pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_SHIFT, KeyEvent.VK_TAB, KeyEvent.VK_TAB});							 
+									pressKey(KeyEvent.VK_UP); pressKey(KeyEvent.VK_UP); pressKey(KeyEvent.VK_UP); 
+									pressKey(KeyEvent.VK_UP); pressKey(KeyEvent.VK_UP);
+									pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_F4});
+							 	} else {
+							 		Runtime.getRuntime().exec("amixer -D pulse sset Master 5%+");
+							 	}
 					break;
-			case VOLUMEMINUS: Runtime.getRuntime().exec("sndvol"); keyPresser.delay(1600);
-							  //pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_SHIFT, KeyEvent.VK_TAB, KeyEvent.VK_TAB});
-							  pressKey(KeyEvent.VK_DOWN); pressKey(KeyEvent.VK_DOWN); pressKey(KeyEvent.VK_DOWN);
-							  pressKey(KeyEvent.VK_DOWN); pressKey(KeyEvent.VK_DOWN);
-							  pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_F4});
+			case VOLUMEMINUS: 	if (systemTray.OSNUMBER == systemTray.WIN) {
+									Runtime.getRuntime().exec("sndvol"); keyPresser.delay(1600);
+									//pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_SHIFT, KeyEvent.VK_TAB, KeyEvent.VK_TAB});
+									pressKey(KeyEvent.VK_DOWN); pressKey(KeyEvent.VK_DOWN); pressKey(KeyEvent.VK_DOWN);
+									pressKey(KeyEvent.VK_DOWN); pressKey(KeyEvent.VK_DOWN);
+									pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_F4});
+								} else {
+									Runtime.getRuntime().exec("amixer -D pulse sset Master 5%-");
+								}
 					break;
-			case VOLUMEMUTE: Runtime.getRuntime().exec("sndvol"); keyPresser.delay(1600);
-							 //pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_SHIFT, KeyEvent.VK_TAB, KeyEvent.VK_TAB});						 
-							 pressKey(KeyEvent.VK_TAB);
-							 pressKey(KeyEvent.VK_SPACE);
-							 pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_F4});
+			case VOLUMEMUTE: 	if (systemTray.OSNUMBER == systemTray.WIN) {
+									Runtime.getRuntime().exec("sndvol"); keyPresser.delay(1600);
+									//	pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_SHIFT, KeyEvent.VK_TAB, KeyEvent.VK_TAB});						 
+									pressKey(KeyEvent.VK_TAB);
+									pressKey(KeyEvent.VK_SPACE);
+									pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_F4});
+							 	} else {
+							 		Runtime.getRuntime().exec("pactl -- set-sink-mute 0 toggle");
+							 	}							 
 					break;
 			case SWITCHAPP: pressComboKeys(new int[] {KeyEvent.VK_ALT, KeyEvent.VK_TAB});
 					break;

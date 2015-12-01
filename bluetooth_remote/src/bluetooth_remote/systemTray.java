@@ -11,6 +11,7 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
+import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -29,6 +30,7 @@ public class systemTray implements ActionListener, ItemListener{
 
 	private MenuItem aboutItem, connectItem, disconnectItem, exitItem;
 	private CheckboxMenuItem startupItem;
+	private TrayIcon trayIcon;
 	
 	public systemTray() {
 		if (!SystemTray.isSupported()) {
@@ -37,7 +39,9 @@ public class systemTray implements ActionListener, ItemListener{
 		}
 		// Check the SystemTray is supported
 		final PopupMenu popup = new PopupMenu();
-		final TrayIcon trayIcon = new TrayIcon((new ImageIcon(systemTray.class.getResource("trayicon.gif"), "")).getImage(), "Bluetooth Remote");
+		Image icon = (OSNUMBER == WIN) ? (new ImageIcon(systemTray.class.getResource("trayicon.gif"), "")).getImage() :
+								   (new ImageIcon(systemTray.class.getResource("trayiconbig.gif"), "")).getImage();
+		trayIcon = new TrayIcon(icon, "Bluetooth Remote");
 		final SystemTray tray = SystemTray.getSystemTray();
 
 		// Create a pop-up menu components
@@ -64,10 +68,10 @@ public class systemTray implements ActionListener, ItemListener{
 			System.out.println("TrayIcon could not be added.");
 		}
 		
-		aboutItem.setActionCommand(ABOUT_CMS); aboutItem.addActionListener(this);
-		connectItem.setActionCommand(CONNECT_CMS); connectItem.addActionListener(this); 
-		disconnectItem.setActionCommand(DISCONNECT_CMS); disconnectItem.addActionListener(this);
-		exitItem.setActionCommand(EXIT_CMS); exitItem.addActionListener(this);
+		aboutItem.setActionCommand(Integer.toString(ABOUT_CMS)); aboutItem.addActionListener(this);
+		connectItem.setActionCommand(Integer.toString(CONNECT_CMS)); connectItem.addActionListener(this); 
+		disconnectItem.setActionCommand(Integer.toString(DISCONNECT_CMS)); disconnectItem.addActionListener(this);
+		exitItem.setActionCommand(Integer.toString(EXIT_CMS)); exitItem.addActionListener(this);
 		startupItem.addItemListener(this);
 		File startup_file = new File(FILE_PATH);
 		if (startup_file.exists() && !startup_file.isDirectory()) { 
@@ -77,27 +81,34 @@ public class systemTray implements ActionListener, ItemListener{
 		}
 	}
 
-	private final String ABOUT_CMS = "0";
-	private final String CONNECT_CMS = "1";
-	private final String DISCONNECT_CMS = "2";
-	private final String EXIT_CMS = "3";
-	private final String STARTUP_CMS = "4";
-	private final String FILE_PATH = System.getProperty("user.home") + "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\bt_remote.bat";
+	private final int ABOUT_CMS = 0;
+	private final int CONNECT_CMS = 1;
+	private final int DISCONNECT_CMS = 2;
+	private final int EXIT_CMS = 3;
+	private final int STARTUP_CMS = 4;
+	private final String FILE_PATH = (OSNUMBER == WIN) ? 
+											System.getProperty("user.home") 
+											+ "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\bt_remote.bat"
+										: 
+											System.getProperty("file.separator") + "bt_remote.sh";
 	private final String STARTUP_PATH = "\"" + FILE_PATH + "\"";
-	private final String INSTALL_PATH = "\"Z:\\D\\remote_1.4.jar\"";
+	private final String RUNNING_PATH = System.getProperty("user.dir");
+	private final String INSTALL_PATH = "\"" + RUNNING_PATH + "\\remote.jar" + "\"" ;	
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub		
 		switch(Integer.parseInt(e.getActionCommand())) {
-			case 0 : 	
+			case ABOUT_CMS : 	
 				break;
-			case 1 : 	btControlRemote.connect();
-					 	connectItem.setLabel("Reconnect");
+			case CONNECT_CMS : 	
+					btControlRemote.connect();
+					connectItem.setLabel("Reconnect");
 				break;
-			case 2 : 	
+			case DISCONNECT_CMS : 	
+					connectItem.setLabel("Connect Remote");	
 				break;
-			case 3 : 	System.exit(0);
+			case EXIT_CMS : 	System.exit(0);
 				break;
 			default : 
 				break;
@@ -105,17 +116,46 @@ public class systemTray implements ActionListener, ItemListener{
 	}
 
 	@Override
-	public void itemStateChanged(ItemEvent e) {
+	public void itemStateChanged(ItemEvent e) {		
 		if (e.getItem().toString().equals(startupItem.getLabel())) {
-			try {
-				if (startupItem.getState()) {								
-					Runtime.getRuntime().exec("cmd /c echo start javaw -jar " + INSTALL_PATH + " > " + STARTUP_PATH);
-				} else {
-					Runtime.getRuntime().exec("cmd /c del " + STARTUP_PATH);
+			if (OSNUMBER == WIN) {
+				try {
+					if (startupItem.getState()) {								
+						Runtime.getRuntime().exec("cmd /c echo start javaw -jar " + INSTALL_PATH + " > " + STARTUP_PATH);
+					} else {
+						Runtime.getRuntime().exec("cmd /c del " + STARTUP_PATH);
+					}
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			} else {
+				try {
+					if (startupItem.getState()) {								
+						Runtime.getRuntime().exec("echo \"sudo nohup java -jar " + INSTALL_PATH + "&\" > " + STARTUP_PATH);
+					} else {
+						Runtime.getRuntime().exec("rm -f " + STARTUP_PATH);
+					}
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}				
 			}
 		}
-	}	
+	}
+	
+	public static final int OSNUMBER = getOS(); 
+	public static final int LINUX = 0;
+	public static final int WIN = 1;
+	
+	private static int getOS() {
+		String os = System.getProperty("os.name").toLowerCase();
+		if (os.startsWith("windows")) {
+			return WIN;
+		} else {
+			return LINUX;
+		}
+	}
+	
+	public void showMessage(String title, String content, MessageType type) {
+		trayIcon.displayMessage(title, content, type);
+	}
 }
